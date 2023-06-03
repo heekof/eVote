@@ -1,0 +1,28 @@
+# dependency directories
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# runtime data
+pids
+*.pid
+*.seed
+*.log
+
+# build directory
+/build/
+
+# dotenv environment variables file
+.env
+
+# IDE / editor directories
+.idea
+.vscode
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
