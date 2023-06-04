@@ -16,5 +16,5 @@ export default function Init() {
   };
 
   // Jsx
-  return <>Hello Init</>;
+  return <>Welcome to eVote web app</>;
 }

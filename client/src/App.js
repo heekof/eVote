@@ -21,8 +21,14 @@ function App() {
     <div className="App">
       <Init />
       <Register onRegister={() => setIsRegistered(true)} />
-      <TestProps item={item} heading="head" onSelectedItem={handleSelectItem} />
-      {alertVisible && <Alert> This is an alert </Alert>}
+      {false && (
+        <TestProps
+          item={item}
+          heading="head"
+          onSelectedItem={handleSelectItem}
+        />
+      )}
+      {false && <Alert> This is an alert </Alert>}
     </div>
   );
 }

@@ -9,10 +9,12 @@ interface Props {
   onVoteChange: (item: string) => void;
 }
 
-function EmailList({ getUsers, getCurrentUser, onVoteChange, testProp }) {
+function EmailList({ getUsers, getCurrentUser, onVoteChange, getAllUsers }) {
   const [items, setItems] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
   const [currentUser, setCurrentUser] = useState("");
+  const [numberPossibleVotes, setNumberPossibleVotes] = useState(0);
 
   useEffect(() => {
     setCurrentUser(getCurrentUser);
@@ -23,6 +25,10 @@ function EmailList({ getUsers, getCurrentUser, onVoteChange, testProp }) {
   useEffect(() => {
     setItems(getUsers);
   }, [getUsers]);
+
+  useEffect(() => {
+    setAllUsers(getAllUsers);
+  }, [getAllUsers]);
 
   const vote = async (email) => {
     try {
@@ -56,37 +62,69 @@ function EmailList({ getUsers, getCurrentUser, onVoteChange, testProp }) {
       alert(error.response.data);
     }
   };
+
+  const computeRemainingVotes = () => {
+    if (allUsers) {
+      let numberVotes = allUsers
+        .map((user) => 2 - user.voted_for.length)
+        .reduce((a, b) => a + b, 0);
+
+      console.log("remaining votes = ");
+      console.log(allUsers.map((user) => 2 - user.voted_for.length));
+
+      setNumberPossibleVotes(numberVotes);
+    }
+  };
+
+  const getNumberVotes = () => {
+    return numberPossibleVotes;
+  };
+
+  useEffect(() => {
+    //console.log("users changed !");
+    computeRemainingVotes();
+    //
+  }, [items]);
+
   // JSX markup
   // <> </> Fragment
   // in JS to loop over an array => items.map(item => console.log(item) )
   // we need to give each <li> a unique key !  items.map( (item,index) => ( <> <>) )
+
+  // Remember here is the start
+  let T = ["", "", "", ""];
   return (
     <>
       <h4>Candidates to vote for :</h4>
-      <ul className="list-group">
-        {[...items]
-          .sort((a, b) => b.votes - a.votes)
-          .map((user, index) => (
-            <li className="list-group-item" key={index}>
+
+      {[...items]
+        .sort((a, b) => b.votes - a.votes)
+        .map((user, index) => (
+          <ul className="list-group list-group-horizontal" key={index * -1}>
+            <li className="list-group-item " key={index}>
               {user.email}
+            </li>
+            <li className="list-group-item ">
               <button
                 className="btn btn-outline-success"
                 onClick={() => vote(user.email)}
               >
                 Vote
               </button>
+            </li>
+            <li className="list-group-item ">
               <button
                 className="btn btn-outline-secondary"
                 onClick={() => unvote(user.email)}
               >
                 Unvote
               </button>
-              Votes: {user.votes}
             </li>
-          ))}
-      </ul>
-
-      <PossibleVotes getUsers={getUsers} testProp={testProp} />
+            <li className="list-group-item ">Votes: {user.votes}</li>
+          </ul>
+        ))}
+      <div></div>
+      <PossibleVotes getNumberVotes={getNumberVotes} />
     </>
   );
 }

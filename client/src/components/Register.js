@@ -7,6 +7,7 @@ function Register({ onRegister }) {
   // const [registered, setRegistered] = useState(false);
   const [candidate, setCandidate] = useState(false);
   const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]); // get all users to count remaining votes
   const [connected, setConnected] = useState(false);
   const [currentEmail, setCurrentEmail] = useState("");
   const [currentText, setCurrentText] = useState("");
@@ -32,17 +33,27 @@ function Register({ onRegister }) {
   }, []);
 
   useEffect(() => {
-    // if (currentEmail) {
-    //   fetchUsers();
-    // }
-    fetchUsers();
+    fetch();
   }, [candidate]);
+
+  const fetch = async () => {
+    fetchAllUsers();
+    fetchUsers();
+  };
 
   const fetchUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5001/getemailsregistered");
       setUsers(res.data);
-      setTestProp(res.data);
+    } catch (error) {
+      alert(error.response.data);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      const res = await axios.get("http://localhost:5001/getemailsdebug");
+      setAllUsers(res.data);
     } catch (error) {
       alert(error.response.data);
     }
@@ -83,7 +94,6 @@ function Register({ onRegister }) {
   };
 
   const getUsers = () => {
-    //fetchUsers();
     return users;
   };
 
@@ -162,7 +172,7 @@ function Register({ onRegister }) {
   // };
 
   useEffect(() => {
-    fetchUsers();
+    fetch();
 
     if (connected == true) {
       // console.log(`Writing to local storage, currentEmail = ${currentText}`);
@@ -182,13 +192,15 @@ function Register({ onRegister }) {
 
   return (
     <>
-      <div> writing : {currentText} </div>
-      <input
-        type="email"
-        value={email}
-        onChange={currentTyping}
-        placeholder="Enter your email"
-      />
+      <div> typing ... {currentText} </div>
+      {!connected && (
+        <input
+          type="email"
+          value={email}
+          onChange={currentTyping}
+          placeholder="Enter your email"
+        />
+      )}
 
       {!connected && (
         <button className="btn btn-outline-primary" onClick={connect}>
@@ -226,8 +238,8 @@ function Register({ onRegister }) {
         <EmailList
           getUsers={users}
           getCurrentUser={getCurrentUser}
-          onVoteChange={fetchUsers}
-          testProp={testProp}
+          onVoteChange={fetch}
+          getAllUsers={allUsers}
         />
       )}
     </>
