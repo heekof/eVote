@@ -39,6 +39,7 @@ function Register({ onRegister }) {
   const fetch = async () => {
     fetchAllUsers();
     fetchUsers();
+    youVotedForThisUser();
   };
 
   const fetchUsers = async () => {
@@ -188,6 +189,34 @@ function Register({ onRegister }) {
   // console.log(` currentText = ${currentText} `);
   // console.log(` users = ${users} `);
 
+  const resetPage = () => {
+    console.log("You should reset the page !!");
+    disconnect();
+  };
+
+  function youVotedForThisUser(u) {
+    /*
+
+    Debug !!!!!
+
+    */
+    if (u && users) {
+      console.log(`youVotedForThisUser u = ${u.email}`);
+      console.log("youVoted currentEmail " + currentEmail);
+      console.log(users);
+      const res = allUsers.filter((user) => user.email === currentEmail)[0];
+      console.log("result");
+      console.log(res);
+
+      // you voted for no one
+      if (!res) return false;
+
+      console.log("result");
+      console.log(res);
+      return res.voted_for.includes(u.email);
+    }
+  }
+
   // <> is a Fragment to tell react to wrapp all his children html
 
   return (
@@ -240,6 +269,8 @@ function Register({ onRegister }) {
           getCurrentUser={getCurrentUser}
           onVoteChange={fetch}
           getAllUsers={allUsers}
+          resetPage={resetPage}
+          youVotedForThisUser={youVotedForThisUser}
         />
       )}
     </>

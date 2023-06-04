@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PossibleVotes from "./PossibleVotes";
+import Reset from "./Reset";
 
 // Props are immutable
 interface Props {
@@ -9,7 +10,14 @@ interface Props {
   onVoteChange: (item: string) => void;
 }
 
-function EmailList({ getUsers, getCurrentUser, onVoteChange, getAllUsers }) {
+function EmailList({
+  getUsers,
+  getCurrentUser,
+  onVoteChange,
+  getAllUsers,
+  resetPage,
+  youVotedForThisUser,
+}) {
   const [items, setItems] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
 
@@ -91,8 +99,6 @@ function EmailList({ getUsers, getCurrentUser, onVoteChange, getAllUsers }) {
   // in JS to loop over an array => items.map(item => console.log(item) )
   // we need to give each <li> a unique key !  items.map( (item,index) => ( <> <>) )
 
-  // Remember here is the start
-  let T = ["", "", "", ""];
   return (
     <>
       <h4>Candidates to vote for :</h4>
@@ -121,10 +127,14 @@ function EmailList({ getUsers, getCurrentUser, onVoteChange, getAllUsers }) {
               </button>
             </li>
             <li className="list-group-item ">Votes: {user.votes}</li>
+            {youVotedForThisUser(user) && (
+              <li className="list-group-item ">STAR</li>
+            )}
           </ul>
         ))}
       <div></div>
       <PossibleVotes getNumberVotes={getNumberVotes} />
+      <Reset resetPage={resetPage} />
     </>
   );
 }

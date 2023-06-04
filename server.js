@@ -6,6 +6,10 @@ const Joi = require("joi");
 
 const app = express();
 
+const data = require("./data/data");
+
+//console.log(data);
+
 app.use(cors());
 app.use(express.json());
 
@@ -168,14 +172,7 @@ app.get(`/setdefaultusers`, async (req, res) => {
     // delete
     await User.deleteMany({});
     // set it in a data folder ==> data.json
-    await User.insertMany([
-      { votes: 2, candidate: true, voted_for: [], email: "jaafar@ovivo.com" },
-      { votes: 2, candidate: true, voted_for: [], email: "dayyani@ovivo.com" },
-      { votes: 2, candidate: true, voted_for: [], email: "matthew@ovivo.com" },
-      { votes: 0, candidate: false, voted_for: [], email: "turing@ovivo.com" },
-      { votes: 0, candidate: false, voted_for: [], email: "ahmed@ovivo.com" },
-      { votes: 0, candidate: false, voted_for: [], email: "issac@ovivo.com" },
-    ]);
+    await User.insertMany(data);
 
     res.send("Candidate initialized");
   } catch (error) {
@@ -222,6 +219,8 @@ app.get("/getemailsdebug", async (req, res) => {
 app.delete("/reset", async (req, res) => {
   try {
     await User.deleteMany({});
+    await User.insertMany(data);
+
     res.send("All emails deleted");
   } catch (error) {
     res.status(500).send(error);
