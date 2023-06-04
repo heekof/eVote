@@ -18,8 +18,6 @@ mongoose.connect("mongodb://localhost:27017/userDB", {
   useUnifiedTopology: true,
 });
 
-//const User = mongoose.model('User', new mongoose.Schema({ email: String }));
-
 const schema = { email: Joi.string().email().required() };
 
 app.post("/register", async (req, res) => {

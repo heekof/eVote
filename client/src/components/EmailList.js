@@ -1,14 +1,22 @@
+/*
+
+EmailList component is for managing the list of 
+  the candidate, their assosciated vote/unvote button
+  printing the vote number and showing marking users 
+  you voted for using STAR mark
+
+
+Not optimised as I was learning while coding :(
+
+
+
+*/
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PossibleVotes from "./PossibleVotes";
 import Reset from "./Reset";
 
 // Props are immutable
-interface Props {
-  users: string[];
-  heading: String;
-  onVoteChange: (item: string) => void;
-}
 
 function EmailList({
   getUsers,
@@ -18,25 +26,26 @@ function EmailList({
   resetPage,
   youVotedForThisUser,
 }) {
-  const [items, setItems] = useState([]);
+  // users
+  const [users, setUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
-
   const [currentUser, setCurrentUser] = useState("");
+  //
   const [numberPossibleVotes, setNumberPossibleVotes] = useState(0);
 
   useEffect(() => {
     setCurrentUser(getCurrentUser);
   }, [getCurrentUser]);
 
-  //console.log(`The current user in EmailList is ${currentUser}`)
-
   useEffect(() => {
-    setItems(getUsers);
+    setUsers(getUsers);
   }, [getUsers]);
 
   useEffect(() => {
     setAllUsers(getAllUsers);
   }, [getAllUsers]);
+
+  // handle when you click on unvote button
 
   const vote = async (email) => {
     try {
@@ -48,24 +57,12 @@ function EmailList({
     }
   };
 
+  // handle when you click on unvote button
   const unvote = async (email) => {
     try {
       await axios.post(`http://localhost:5001/unvote/${email}/${currentUser}`);
       //checkItems();
       onVoteChange();
-    } catch (error) {
-      alert(error.response.data);
-    }
-  };
-
-  //useEffect( ()=>{}, [items])
-  const checkItems = async () => {
-    try {
-      const updatedUsers = await axios.get(
-        `http://localhost:5001/getemailsregistered`
-      );
-      // console.log(updatedUsers)
-      setItems(updatedUsers.data);
     } catch (error) {
       alert(error.response.data);
     }
@@ -77,9 +74,6 @@ function EmailList({
         .map((user) => 2 - user.voted_for.length)
         .reduce((a, b) => a + b, 0);
 
-      console.log("remaining votes = ");
-      console.log(allUsers.map((user) => 2 - user.voted_for.length));
-
       setNumberPossibleVotes(numberVotes);
     }
   };
@@ -89,21 +83,25 @@ function EmailList({
   };
 
   useEffect(() => {
-    //console.log("users changed !");
     computeRemainingVotes();
-    //
-  }, [items]);
+  }, [users]);
 
   // JSX markup
   // <> </> Fragment
   // in JS to loop over an array => items.map(item => console.log(item) )
   // we need to give each <li> a unique key !  items.map( (item,index) => ( <> <>) )
 
+  // [...users] => is to copy users
+
+  // sorting collection by an attribute
+  // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
+  // https://www.programiz.com/javascript/examples/sort-array-objects
+
   return (
     <>
       <h4>Candidates to vote for :</h4>
 
-      {[...items]
+      {[...users]
         .sort((a, b) => b.votes - a.votes)
         .map((user, index) => (
           <ul className="list-group list-group-horizontal" key={index * -1}>

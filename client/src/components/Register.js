@@ -1,47 +1,67 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import EmailList from "./EmailList";
-import Reset from "./Reset";
+/*
 
-function Register({ onRegister }) {
-  // const [registered, setRegistered] = useState(false);
+Register component responsible for registering users. 
+
+default users : 
+
+sean.carroll@ovivo.com ==> candidate  + default 2 votes
+dayyani.basel@ovivo.com ==> candidate  + default 2 votes
+alan.turing@ovivo.com ==> candidate  + default 2 votes
+
+ray.dalio@ovivo.com
+martin.scorsese@ovivo.com
+hans.zimmer@ovivo.com
+
+*/
+import React, { useEffect, useMemo, useState } from "react";
+
+// axios for API calls to mongoDB (mongoose)
+import axios from "axios";
+// importing EmailList for listing emails
+import EmailList from "./EmailList";
+
+function Register() {
+  // state for checking if user became candidate
   const [candidate, setCandidate] = useState(false);
+  // get all the users that are candidate
   const [users, setUsers] = useState([]);
+  // get all the users, used to count the remaining votes
   const [allUsers, setAllUsers] = useState([]); // get all users to count remaining votes
+  // state of user connected or disconnected from the app
   const [connected, setConnected] = useState(false);
+  // Not optimised, I need to use useRef here.
+  // checks for current user after reloading the page
   const [currentEmail, setCurrentEmail] = useState("");
+  // tracks current typed text, not optimized.
   const [currentText, setCurrentText] = useState("");
+  // tracks the email sent
   const [email, setEmail] = useState("");
 
-  const [testProp, setTestProp] = useState("testProp");
-
-  // // Read localStorage
+  // Read localStorage inorder to keep the same data after reloading
   useEffect(() => {
     if (localStorage.getItem("currentEmail") != null) {
-      //console.log(`local storage exists with currentEmail !`);
-
       const currentEmailStorage = localStorage.getItem("currentEmail");
       const connectedStorage = localStorage.getItem("connected");
-
-      // console.log(
-      //   `Reading from local storage, current Email = ${currentEmailStorage} and connected = ${connectedStorage}`
-      // );
 
       setCurrentEmail(currentEmailStorage);
       setConnected(connectedStorage);
     }
   }, []);
 
+  // if candidate change fetch data
   useEffect(() => {
     fetch();
   }, [candidate]);
 
+  // :( not optimized as I needed to change afterwards
+  // fetches for all users and updates the user voted for view : "STAR"
   const fetch = async () => {
     fetchAllUsers();
     fetchUsers();
     youVotedForThisUser();
   };
 
+  // get emails that are candidate (bad name as I have misunderstood in the beginning)
   const fetchUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5001/getemailsregistered");
@@ -51,6 +71,7 @@ function Register({ onRegister }) {
     }
   };
 
+  // get all users and set them
   const fetchAllUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5001/getemailsdebug");
@@ -60,11 +81,10 @@ function Register({ onRegister }) {
     }
   };
 
+  // handle when a new email wants to regidter
   const register = async () => {
     let email = currentText;
     try {
-      // to test
-      // console.log(`The email send is ${email}`);
       await axios.post("http://localhost:5001/register", { email });
       alert("User successfully registered");
     } catch (error) {
@@ -72,6 +92,7 @@ function Register({ onRegister }) {
     }
   };
 
+  // withdraw candidate from election.
   const withdraw = async () => {
     try {
       await axios.post(`http://localhost:5001/withdraw/${currentEmail}`);
@@ -83,6 +104,7 @@ function Register({ onRegister }) {
     }
   };
 
+  // API to become candidate
   const beCandidate = async () => {
     try {
       await axios.post(`http://localhost:5001/becandidate/${currentEmail}`);
@@ -94,13 +116,8 @@ function Register({ onRegister }) {
     }
   };
 
-  const getUsers = () => {
-    return users;
-  };
-
-  // useEffect(() => {}, [currentText]);
-  // useEffect(() => {}, [currentEmail]);
-
+  // tracks current typing
+  // bad idea but I did it to learn how useState works
   const currentTyping = (e) => {
     const currentT = e.target.value;
 
@@ -108,13 +125,8 @@ function Register({ onRegister }) {
     setEmail(currentT);
   };
 
+  // handle register emails
   const registerEmail = async () => {
-    // if (registered) {
-    //   alert("Cannot register another person ! To exit refresh the page");
-    //   return;
-    // }
-
-    //console.log("currentText = "+currentText)
     await setCurrentEmail(currentText);
 
     register();
@@ -125,26 +137,24 @@ function Register({ onRegister }) {
     return currentEmail;
   };
 
-  const isRegistered = (email) => {};
-
+  // connect API => check if user exists in DB
+  // if yes connect it
+  // else Error
   const connect = async () => {
     // connect the user if he is registered
 
     try {
-      // const {error} = Joi.validate({"email" : currentText}, schema);
-      // if(error) return alert("Email not formatted !")
-
+      // Here I could have let the server return an error if text is empty
       if (currentText === "") return;
 
-      //console.log(`The email send is ${email}`);
-
+      // connect API
       const user_exists = await axios.get(
         `http://localhost:5001/connect/${email}`
       );
 
+      // setup after connection is validated
       if (user_exists) {
         setConnected(true);
-        //setRegistered(true);
         setCurrentEmail(currentText);
         setEmail("");
         alert("Congratulations you are connected");
@@ -156,6 +166,7 @@ function Register({ onRegister }) {
     }
   };
 
+  // handle disconnect button
   const disconnect = () => {
     setConnected(false);
     setCurrentEmail("");
@@ -168,57 +179,39 @@ function Register({ onRegister }) {
     alert("Disconnected !");
   };
 
-  // const voteChanged = () => {
-  //   console.log(`Vote has successfully changed`);
-  // };
-
+  // if connected ==> store data in localStorage
   useEffect(() => {
     fetch();
 
     if (connected == true) {
-      // console.log(`Writing to local storage, currentEmail = ${currentText}`);
-      // console.log(`Writing to local storage, connected = ${connected}`);
-
       localStorage.setItem("currentEmail", currentText);
       localStorage.setItem("connected", connected);
     }
   }, [connected]);
 
-  // console.log(` connected = ${connected} `);
-  // console.log(` currentEmail = ${currentEmail} `);
-  // console.log(` currentText = ${currentText} `);
-  // console.log(` users = ${users} `);
-
+  // when clicking on Reset button
   const resetPage = () => {
-    console.log("You should reset the page !!");
     disconnect();
   };
 
+  // Not optimised !!!
+  // I don't understand ... still learning ...
+  // Show which candidate you voted for by printing : STAR
   function youVotedForThisUser(u) {
-    /*
-
-    Debug !!!!!
-
-    */
     if (u && users) {
-      console.log(`youVotedForThisUser u = ${u.email}`);
-      console.log("youVoted currentEmail " + currentEmail);
-      console.log(users);
       const res = allUsers.filter((user) => user.email === currentEmail)[0];
-      console.log("result");
-      console.log(res);
 
-      // you voted for no one
       if (!res) return false;
 
-      console.log("result");
-      console.log(res);
+      // console.log("result");
+      // console.log(u.email);
+
       return res.voted_for.includes(u.email);
     }
   }
 
   // <> is a Fragment to tell react to wrapp all his children html
-
+  // JSX
   return (
     <>
       <div> typing ... {currentText} </div>
