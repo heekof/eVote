@@ -1,21 +1,28 @@
-import React, {useState,useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from "react";
 
-import Register from './Register';
-import Reset  from './Reset';
-import Init from './Init';
+import Register from "./components/Register";
+import Reset from "./components/Reset";
+import Init from "./components/Init";
+import TestProps from "./components/TestProps";
+import Alert from "./components/Alert";
 
 function App() {
-
-
   const [isRegistered, setIsRegistered] = useState(false);
- 
 
+  let item = "new_item";
+
+  const handleSelectItem = () => {
+    console.log(`Selected item is ${item}`);
+  };
+
+  const [alertVisible, setAlertVisibility] = useState(true);
 
   return (
     <div className="App">
       <Init />
-      <Register onRegister={() => setIsRegistered(true)}  />
-           
+      <Register onRegister={() => setIsRegistered(true)} />
+      <TestProps item={item} heading="head" onSelectedItem={handleSelectItem} />
+      {alertVisible && <Alert> This is an alert </Alert>}
     </div>
   );
 }
