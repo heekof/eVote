@@ -20,8 +20,6 @@ app.post('/register', async (req, res) => {
   try {
 
     const {error} = Joi.validate(req.body, schema);
-    // console.log(error);
-
     if(error) return res.status(500).send("Email Error")
 
     const user = new User({ email: req.body.currentText, votes: 0, candidate: false }); // initialize votes to 0
@@ -132,6 +130,27 @@ app.post('/becandidate/:email', async (req, res) => {
 });
 
 
+app.get('/connect/:email', async (req, res) => {
+  
+
+  try {
+
+    // const {error} = Joi.validate({email:req.params.email}, schema);
+    // if(error) return res.status(500).send("Email Error")
+
+    const user = await User.findOne({ email: req.params.email });
+    
+    console.log(`user = ${user} and condition = ${!user} `)
+    if (!user) return res.status(404).send('User not found');
+    return res.send(true);
+
+  } catch (error) {
+
+    res.status(500).send(error);
+  }
+});
+
+
 
 app.get(`/setdefaultusers`, async (req, res) => {
   
@@ -145,7 +164,10 @@ app.get(`/setdefaultusers`, async (req, res) => {
       await User.insertMany(
           [{"votes":2,"candidate":true,"voted_for":[],"email":"jaafar@ovivo.com"},
           {"votes":2,"candidate":true,"voted_for":[],"email":"dayyani@ovivo.com"},
-          {"votes":2,"candidate":true,"voted_for":[],"email":"matthew@ovivo.com"}]
+          {"votes":2,"candidate":true,"voted_for":[],"email":"matthew@ovivo.com"},
+          {"votes":0,"candidate":false,"voted_for":[],"email":"turing@ovivo.com"},
+          {"votes":0,"candidate":false,"voted_for":[],"email":"ahmed@ovivo.com"},
+          {"votes":0,"candidate":false,"voted_for":[],"email":"issac@ovivo.com"}]
           );
 
     res.send('Candidate initialized');

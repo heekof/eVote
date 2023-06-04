@@ -12,12 +12,12 @@ export default function Init() {
 
     const addDefautUsers = async () => {
 
-  try {
-    await axios.get(`http://localhost:5001/setdefaultusers`);
-  } catch (error) {
-    //console.error('Error updating items', error);
-    alert(error.response.data)
-  }
+  // try {
+  //   await axios.get(`http://localhost:5001/setdefaultusers`);
+  // } catch (error) {
+  //   //console.error('Error updating items', error);
+  //   alert(error.response.data)
+  // }
 }
 
 // Jsx

@@ -3,11 +3,16 @@ import axios from 'axios';
 import EmailList from './EmailList';
 import Reset from './Reset';
 
+// need to put in a separate module ...
+// const Joi = require('joi');
+// const schema = { currentText : Joi.string().email().required()}
+
+
 function Register({ onRegister }) {
   const [registered,setRegistered] = useState(false);
   const [candidate, setCandidate] = useState(false);
   const [users, setUsers] = useState([]);
-
+  const [connected, setConnected] = useState(false)
 
   const[currentEmail, setCurrentEmail] = useState("");
   const[currentText, setCurrentText] = useState("");
@@ -121,19 +126,80 @@ const currentTyping =(e) => {
     return currentEmail;
   }
 
+  const isRegistered = (email) => {
+
+
+
+  }
+
+  const connect = async () => {
+    // connect the user if he is registered
+
+        try{
+
+    
+    // const {error} = Joi.validate({"email" : currentText}, schema);
+    // if(error) return alert("Email not formatted !")
+
+    console.log(`current Email = ${currentText}`)
+    const user_exists = await axios.get(`http://localhost:5001/connect/${currentText}`);
+    
+    if (user_exists){
+
+    setConnected(true);
+    setRegistered(true)
+    setCurrentEmail(currentText)
+    setEmail("");
+    alert("Congratulations you are connected")
+    }
+    else {
+
+        alert("User not found !")
+    }
+
+
+    }
+    catch (error){
+
+        alert(error.response.data)
+    }
+
+  }
+
+  const disconnect = () => {
+
+    setConnected(false);
+    setRegistered(false)
+    setCurrentEmail("")
+    setEmail("");
+    alert("Congratulations you are connected")
+
+  }
+
   return (
     <div>
        <div> writing : {currentText} </div>
       <input type="email" value={email} onChange={currentTyping} placeholder="Enter your email" />
+
+
+      { !connected &&  <button onClick={connect}>Connect</button>} 
+
       
-      <button onClick={registerEmail}>Register</button>
-      <button onClick={beCandidate}>Be Candidate</button>
-      <button onClick={withdraw}>Withdraw</button>
+      {  !registered  &&  <button onClick={registerEmail}>Register</button>} 
+
+    { connected &&   <button onClick={beCandidate}>Be Candidate</button> }
+
+      { connected &&  <button onClick={withdraw}>Withdraw</button>  }
+
+      { connected &&  <button onClick={disconnect}>Disconnect</button>  }
+
+    
  
-        {registered ?  <h1> Hello you are registered as {currentEmail} {registered} </h1> : <h1> Hello you are not registered  </h1> }
+        {connected ?  <h4> Hello you are signed in as {currentEmail} {registered} </h4> : <h4> Hello you are not signed-in  </h4> }
 
 
-<EmailList getUsers={getUsers} getCurrentUser={getCurrentUser} />
+
+ {connected && <EmailList getUsers={getUsers} getCurrentUser={getCurrentUser} /> }
             <Reset  />
 
 
