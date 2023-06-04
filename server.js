@@ -8,6 +8,10 @@ const app = express();
 
 const data = require("./data/data");
 
+// prod requirements
+require("./client/src/startup/prod")(app);
+
+const port = process.env.PORT || 5001;
 //console.log(data);
 
 app.use(cors());
@@ -225,6 +229,8 @@ app.delete("/reset", async (req, res) => {
   }
 });
 
-app.listen(5001, () => {
-  console.log("Server is running on port 5001");
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
+
+module.exports = app;

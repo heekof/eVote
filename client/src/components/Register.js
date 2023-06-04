@@ -20,7 +20,7 @@ import axios from "axios";
 // importing EmailList for listing emails
 import EmailList from "./EmailList";
 
-function Register() {
+function Register({ port }) {
   // state for checking if user became candidate
   const [candidate, setCandidate] = useState(false);
   // get all the users that are candidate
@@ -64,7 +64,9 @@ function Register() {
   // get emails that are candidate (bad name as I have misunderstood in the beginning)
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/getemailsregistered");
+      const res = await axios.get(
+        `http://localhost:${port}/getemailsregistered`
+      );
       setUsers(res.data);
     } catch (error) {
       alert(error.response.data);
@@ -74,7 +76,7 @@ function Register() {
   // get all users and set them
   const fetchAllUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/getemailsdebug");
+      const res = await axios.get(`http://localhost:${port}/getemailsdebug`);
       setAllUsers(res.data);
     } catch (error) {
       alert(error.response.data);
@@ -85,7 +87,7 @@ function Register() {
   const register = async () => {
     let email = currentText;
     try {
-      await axios.post("http://localhost:5001/register", { email });
+      await axios.post(`http://localhost:${port}/register`, { email });
       alert("User successfully registered");
     } catch (error) {
       alert(error.response.data);
@@ -95,7 +97,7 @@ function Register() {
   // withdraw candidate from election.
   const withdraw = async () => {
     try {
-      await axios.post(`http://localhost:5001/withdraw/${currentEmail}`);
+      await axios.post(`http://localhost:${port}/withdraw/${currentEmail}`);
       setCandidate(false);
 
       alert("Candidate Withrawed !");
@@ -107,7 +109,7 @@ function Register() {
   // API to become candidate
   const beCandidate = async () => {
     try {
-      await axios.post(`http://localhost:5001/becandidate/${currentEmail}`);
+      await axios.post(`http://localhost:${port}/becandidate/${currentEmail}`);
       setCandidate(true);
 
       alert("Congratulations you are a new candidate");
@@ -149,7 +151,7 @@ function Register() {
 
       // connect API
       const user_exists = await axios.get(
-        `http://localhost:5001/connect/${email}`
+        `http://localhost:${port}/connect/${email}`
       );
 
       // setup after connection is validated
@@ -264,6 +266,7 @@ function Register() {
           getAllUsers={allUsers}
           resetPage={resetPage}
           youVotedForThisUser={youVotedForThisUser}
+          port={port}
         />
       )}
     </>

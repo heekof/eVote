@@ -6,9 +6,9 @@ export default function Init() {
     console.log("Init Called");
   }, []);
 
-  const addDefautUsers = async () => {
+  const addDefautUsers = async ({ port }) => {
     try {
-      await axios.get(`http://localhost:5001/setdefaultusers`);
+      await axios.get(`http://localhost:${port}/setdefaultusers`);
     } catch (error) {
       //console.error('Error updating items', error);
       alert(error.response.data);
