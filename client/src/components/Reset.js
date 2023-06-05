@@ -3,11 +3,11 @@ import axios from "axios";
 
 import { useEffect } from "react";
 
-function Reset({ resetPage }) {
+function Reset({ resetPage, port }) {
   const [reseted, setReseted] = useState(false);
   useEffect(() => {}, [reseted]);
 
-  const reset = async ({ port }) => {
+  const reset = async () => {
     try {
       await axios.delete(`http://localhost:${port}/reset`);
       // Add additional logic here if you want to update UI after reset
@@ -16,7 +16,7 @@ function Reset({ resetPage }) {
 
       resetPage();
     } catch (error) {
-      console.error("Error deleting emails", error);
+      console.error(`Error deleting emails : http://localhost:${port}/reset`);
     }
   };
 
