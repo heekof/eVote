@@ -9,7 +9,7 @@ const app = express();
 const data = require("./data/data");
 
 // prod requirements
-require("./client/src/startup/prod")(app);
+//require("./client/src/startup/prod")(app);
 
 const port = process.env.PORT || 5001;
 //console.log(data);
@@ -20,6 +20,16 @@ app.use(express.json());
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/userDB";
 
+/*
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+  */
 mongoose.connect(`${MONGODB_URI}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -235,5 +245,3 @@ app.delete("/reset", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-module.exports = app;
