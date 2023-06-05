@@ -42,6 +42,15 @@ The data is defined in MongoDB and stored as module variables in the "data" fold
 
 Input validation is performed at the server level using the Joi library.
 
+### Default users:
+
+sean.carroll@ovivo.com ==> candidate + default 2 votes
+dayyani.basel@ovivo.com ==> candidate + default 2 votes
+alan.turing@ovivo.com ==> candidate + default 2 votes
+ray.dalio@ovivo.com
+martin.scorsese@ovivo.com
+hans.zimmer@ovivo.com
+
 ## Branches
 
 Two branches are maintained:
