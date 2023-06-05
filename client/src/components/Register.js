@@ -39,9 +39,6 @@ function Register({ port }) {
   // tracks the email sent
   const [email, setEmail] = useState("");
 
-  console.log(`-1 candidate status = ${candidate}`);
-  console.log(`-1 test status = ${test}`);
-
   // Read localStorage inorder to keep the same data after reloading
   useEffect(() => {
     if (localStorage.getItem("currentEmail") != null) {
@@ -57,7 +54,6 @@ function Register({ port }) {
   useEffect(() => {
     fetch();
     getUsers();
-    console.log(`2 candidate status = ${candidate}`);
   }, [candidate]);
 
   useEffect(() => {
@@ -71,6 +67,51 @@ function Register({ port }) {
     fetchUsers();
     youVotedForThisUser();
   };
+
+  // const checkVotedForAreStillCandidate = async () => {
+  //   if (connected == true && allUsers) {
+  //     const usersYouVotedFor = allUsers.filter(
+  //       (user) => user.email === currentEmail
+  //     )[0].voted_for;
+  //     console.log(`The users you voted for users = ${usersYouVotedFor}`);
+
+  //     const candidates = allUsers
+  //       .filter((user) => user.candidate === true)
+  //       .map((user) => user.email);
+
+  //     console.log(`The current candidates = ${candidates}`);
+  //     console.log(candidates);
+
+  //     const UsersYouVotedForThatAreStillCandidates = usersYouVotedFor.filter(
+  //       (user) => candidates.includes(user)
+  //     );
+
+  //     console.log(
+  //       `UsersYouVotedForThatAreStillCandidates = ${UsersYouVotedForThatAreStillCandidates}`
+  //     );
+
+  //     updateUsersVotedFor(UsersYouVotedForThatAreStillCandidates);
+  //   }
+  // };
+
+  // const updateUsersVotedFor = async (
+  //   UsersYouVotedForThatAreStillCandidates
+  // ) => {
+  //   try {
+  //     const res = await axios.post(
+  //       `http://localhost:${port}/updateusersvotedfor/`,
+  //       {
+  //         users: UsersYouVotedForThatAreStillCandidates,
+  //         email: email,
+  //       }
+  //     );
+  //     setUsers(res.data);
+  //   } catch (error) {
+  //     alert(error.response.data);
+  //   }
+  // };
+
+  // checkVotedForAreStillCandidate();
 
   // get emails that are candidate (bad name as I have misunderstood in the beginning)
   const fetchUsers = async () => {
@@ -108,16 +149,11 @@ function Register({ port }) {
   // withdraw candidate from election.
   const withdraw = async () => {
     try {
-      console.log("You clicked on withdraw !!");
       await axios.post(`http://localhost:${port}/withdraw/${currentEmail}`);
 
       // IMPORTANT : happens asynchronously and so doesn't appear until next render
 
-      console.log(`0 candidate status = ${candidate}`);
-
       setCandidate(false);
-
-      console.log(`1 candidate status = ${candidate}`);
 
       alert("Candidate Withrawed !");
     } catch (error) {
@@ -229,9 +265,6 @@ function Register({ port }) {
       const res = allUsers.filter((user) => user.email === currentEmail)[0];
 
       if (!res) return false;
-
-      // console.log("result");
-      // console.log(u.email);
 
       return res.voted_for.includes(u.email);
     }

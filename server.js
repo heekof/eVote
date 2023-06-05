@@ -74,7 +74,6 @@ app.post("/vote/:email/:user", async (req, res) => {
       return res.status(500).send(`You cannot vote for yourself !`);
 
     // process the logic of the vote
-    console.log(`We have received a vote for ${candidate} by  user=${voter}`);
 
     let { voted_for } = await User.findOne({ email: voter }); //.voted_for; // Only find users where candidate is true
 
@@ -82,11 +81,6 @@ app.post("/vote/:email/:user", async (req, res) => {
     let uniqueVotes = new Set(voted_for).size;
     let candidates_voted_for = voted_for.length;
 
-    console.log(
-      `The previously voted for candidates ${voted_for} for candidate ${candidate}`
-    );
-
-    console.log("foo");
     // if email voted for === users.email ==> Error
 
     if (candidates_voted_for > 2)
@@ -94,10 +88,6 @@ app.post("/vote/:email/:user", async (req, res) => {
 
     let cond_one_vote_per_candidate =
       uniqueVotes < candidates_voted_for && uniqueVotes == 1;
-
-    console.log(
-      `uniqueVotes = ${uniqueVotes} & voted_for.length = ${candidates_voted_for} cond = ${cond_one_vote_per_candidate}`
-    );
 
     if (cond_one_vote_per_candidate)
       return res.status(500).send(`Cannot vote twice for the same candidate !`);
@@ -121,8 +111,6 @@ app.post("/unvote/:email/:user", async (req, res) => {
   try {
     voter = req.params.user;
     candidate = req.params.email;
-
-    console.log("Unvoting ...");
 
     let { voted_for } = await User.findOne({ email: voter }); //.voted_for; // Only find users where candidate is true
 
@@ -150,6 +138,25 @@ app.post("/unvote/:email/:user", async (req, res) => {
   }
 });
 
+app.post(`/updateusersvotedfor`, async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  console.log(`user = ${user}  `);
+  console.log(
+    `UsersYouVotedForThatAreStillCandidates = ${req.body.UsersYouVotedForThatAreStillCandidates}  `
+  );
+
+  try {
+    await User.findOneAndUpdate(
+      { email: req.body.email },
+      { voted_for: req.body.UsersYouVotedForThatAreStillCandidates }
+    );
+    res.send("Candidate status updated");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 app.post("/becandidate/:email", async (req, res) => {
   const user = await User.findOne({ email: req.params.email });
   if (user.candidate)
@@ -169,12 +176,10 @@ app.post("/becandidate/:email", async (req, res) => {
 app.get("/connect/:email", async (req, res) => {
   try {
     const { error } = Joi.validate(req.params, schema);
-    console.log(error);
     if (error) return res.status(500).send(error.message);
 
     const user = await User.findOne({ email: req.params.email });
 
-    console.log(`user = ${user} and condition = ${!user} `);
     if (!user) return res.status(404).send("User not found");
     return res.send(true);
   } catch (error) {
@@ -191,7 +196,6 @@ app.get(`/setdefaultusers`, async (req, res) => {
 
     res.send("Candidate initialized");
   } catch (error) {
-    console.log(error);
     res.status(500).send(error);
   }
 });
@@ -206,6 +210,15 @@ app.post("/withdraw/:email", async (req, res) => {
       { email: req.params.email },
       { candidate: false }
     );
+    await User.findOneAndUpdate({ email: req.params.email }, { votes: 0 });
+
+    // remove this user from all voted_for array in users that have voted for him
+
+    await User.updateMany(
+      { voted_for: req.params.email },
+      { $pull: { voted_for: req.params.email } }
+    );
+
     res.send("Candidate status updated");
   } catch (error) {
     res.status(500).send(error);
@@ -215,7 +228,6 @@ app.post("/withdraw/:email", async (req, res) => {
 app.get("/getemailsregistered", async (req, res) => {
   try {
     const users = await User.find({ candidate: true }); // Only find users where candidate is true
-    //console.log("Registered users found = " + users)
     return res.send(users);
   } catch (error) {
     res.status(500).send(error);
