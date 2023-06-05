@@ -22,7 +22,7 @@ import EmailList from "./EmailList";
 
 function Register({ port }) {
   // state for checking if user became candidate
-  const [candidate, setCandidate] = useState(false);
+  const [candidate, setCandidate] = useState(); // Huge mistake !!! this value was set to false !!!!
   // get all the users that are candidate
   const [users, setUsers] = useState([]);
   // get all the users, used to count the remaining votes
@@ -51,6 +51,8 @@ function Register({ port }) {
   // if candidate change fetch data
   useEffect(() => {
     fetch();
+    getUsers();
+    console.log(`2 candidate status = ${candidate}`);
   }, [candidate]);
 
   // :( not optimized as I needed to change afterwards
@@ -59,7 +61,6 @@ function Register({ port }) {
     fetchAllUsers();
     fetchUsers();
     youVotedForThisUser();
-    getUsers();
   };
 
   // get emails that are candidate (bad name as I have misunderstood in the beginning)
@@ -100,7 +101,11 @@ function Register({ port }) {
     try {
       console.log("You clicked on withdraw !!");
       await axios.post(`http://localhost:${port}/withdraw/${currentEmail}`);
+
+      // IMPORTANT : happens asynchronously and so doesn't appear until next render
       setCandidate(false);
+
+      console.log(`1 candidate status = ${candidate}`);
 
       alert("Candidate Withrawed !");
     } catch (error) {
@@ -274,6 +279,7 @@ function Register({ port }) {
           resetPage={resetPage}
           youVotedForThisUser={youVotedForThisUser}
           port={port}
+          candidate={candidate}
         />
       )}
     </>
