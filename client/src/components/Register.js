@@ -59,6 +59,7 @@ function Register({ port }) {
     fetchAllUsers();
     fetchUsers();
     youVotedForThisUser();
+    getUsers();
   };
 
   // get emails that are candidate (bad name as I have misunderstood in the beginning)
@@ -97,6 +98,7 @@ function Register({ port }) {
   // withdraw candidate from election.
   const withdraw = async () => {
     try {
+      console.log("You clicked on withdraw !!");
       await axios.post(`http://localhost:${port}/withdraw/${currentEmail}`);
       setCandidate(false);
 
@@ -196,6 +198,11 @@ function Register({ port }) {
     disconnect();
   };
 
+  // this function is important to update the user if withrawed
+  const getUsers = () => {
+    return users;
+  };
+
   // Not optimised !!!
   // I don't understand ... still learning ...
   // Show which candidate you voted for by printing : STAR
@@ -260,7 +267,7 @@ function Register({ port }) {
 
       {connected && (
         <EmailList
-          getUsers={users}
+          getUsers={getUsers}
           getCurrentUser={getCurrentUser}
           onVoteChange={fetch}
           getAllUsers={allUsers}
