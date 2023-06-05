@@ -210,6 +210,7 @@ app.post("/withdraw/:email", async (req, res) => {
       { email: req.params.email },
       { candidate: false }
     );
+    await User.findOneAndUpdate({ email: req.params.email }, { votes: 0 });
 
     // remove this user from all voted_for array in users that have voted for him
 
