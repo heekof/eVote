@@ -7,11 +7,11 @@ import React, { useState } from "react";
 import Register from "./components/Register";
 import Init from "./components/Init";
 
-function App() {
+function App({ port }) {
   return (
     <div className="App">
-      <Init />
-      <Register />
+      <Init port={port} />
+      <Register port={port} />
     </div>
   );
 }

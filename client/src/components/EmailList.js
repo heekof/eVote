@@ -25,6 +25,7 @@ function EmailList({
   getAllUsers,
   resetPage,
   youVotedForThisUser,
+  port,
 }) {
   // users
   const [users, setUsers] = useState([]);
@@ -49,7 +50,7 @@ function EmailList({
 
   const vote = async (email) => {
     try {
-      await axios.post(`http://localhost:5001/vote/${email}/${currentUser}`);
+      await axios.post(`http://localhost:${port}/vote/${email}/${currentUser}`);
       //checkItems();
       onVoteChange();
     } catch (error) {
@@ -60,7 +61,9 @@ function EmailList({
   // handle when you click on unvote button
   const unvote = async (email) => {
     try {
-      await axios.post(`http://localhost:5001/unvote/${email}/${currentUser}`);
+      await axios.post(
+        `http://localhost:${port}/unvote/${email}/${currentUser}`
+      );
       //checkItems();
       onVoteChange();
     } catch (error) {
@@ -132,7 +135,7 @@ function EmailList({
         ))}
       <div></div>
       <PossibleVotes getNumberVotes={getNumberVotes} />
-      <Reset resetPage={resetPage} />
+      <Reset resetPage={resetPage} port={port} />
     </>
   );
 }
