@@ -22,7 +22,9 @@ import EmailList from "./EmailList";
 
 function Register({ port }) {
   // state for checking if user became candidate
-  const [candidate, setCandidate] = useState(false);
+  const [candidate, setCandidate] = useState("toto"); // Huge mistake !!! this value was set to false !!!!
+  const [test, setTest] = useState("toto_test"); // Huge mistake !!! this value was set to false !!!!
+
   // get all the users that are candidate
   const [users, setUsers] = useState([]);
   // get all the users, used to count the remaining votes
@@ -36,6 +38,9 @@ function Register({ port }) {
   const [currentText, setCurrentText] = useState("");
   // tracks the email sent
   const [email, setEmail] = useState("");
+
+  console.log(`-1 candidate status = ${candidate}`);
+  console.log(`-1 test status = ${test}`);
 
   // Read localStorage inorder to keep the same data after reloading
   useEffect(() => {
@@ -51,7 +56,13 @@ function Register({ port }) {
   // if candidate change fetch data
   useEffect(() => {
     fetch();
+    getUsers();
+    console.log(`2 candidate status = ${candidate}`);
   }, [candidate]);
+
+  useEffect(() => {
+    getUsers();
+  }, [users]);
 
   // :( not optimized as I needed to change afterwards
   // fetches for all users and updates the user voted for view : "STAR"
@@ -59,7 +70,6 @@ function Register({ port }) {
     fetchAllUsers();
     fetchUsers();
     youVotedForThisUser();
-    getUsers();
   };
 
   // get emails that are candidate (bad name as I have misunderstood in the beginning)
@@ -100,7 +110,14 @@ function Register({ port }) {
     try {
       console.log("You clicked on withdraw !!");
       await axios.post(`http://localhost:${port}/withdraw/${currentEmail}`);
+
+      // IMPORTANT : happens asynchronously and so doesn't appear until next render
+
+      console.log(`0 candidate status = ${candidate}`);
+
       setCandidate(false);
+
+      console.log(`1 candidate status = ${candidate}`);
 
       alert("Candidate Withrawed !");
     } catch (error) {
@@ -173,6 +190,7 @@ function Register({ port }) {
   // handle disconnect button
   const disconnect = () => {
     setConnected(false);
+    setCandidate("toto");
     setCurrentEmail("");
     setCurrentText("");
     setEmail("");
@@ -274,6 +292,7 @@ function Register({ port }) {
           resetPage={resetPage}
           youVotedForThisUser={youVotedForThisUser}
           port={port}
+          candidate={candidate}
         />
       )}
     </>

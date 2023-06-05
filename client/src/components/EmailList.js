@@ -26,6 +26,7 @@ function EmailList({
   resetPage,
   youVotedForThisUser,
   port,
+  candidate,
 }) {
   // users
   const [users, setUsers] = useState([]);
@@ -99,6 +100,8 @@ function EmailList({
   // sorting collection by an attribute
   // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
   // https://www.programiz.com/javascript/examples/sort-array-objects
+
+  console.log("EmailList is rendered");
 
   return (
     <>
