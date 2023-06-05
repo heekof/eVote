@@ -7,9 +7,9 @@ function Reset({ resetPage }) {
   const [reseted, setReseted] = useState(false);
   useEffect(() => {}, [reseted]);
 
-  const reset = async () => {
+  const reset = async ({ port }) => {
     try {
-      await axios.delete("http://localhost:5001/reset");
+      await axios.delete(`http://localhost:${port}/reset`);
       // Add additional logic here if you want to update UI after reset
       alert("candidates list reseted !");
       setReseted(true);
